@@ -38,9 +38,8 @@ You need:
 | `BOT_TOKEN` | yes | — | BotFather token. |
 | `GEMINI_API_KEY` | yes | — | AI Studio key. |
 | `CHAT_ID` | yes | — | Negative numeric ID of the target group. |
-| `TRACTOR_TRIGGER_WORDS` | no | `claude,claudio` | Comma-separated tractor-image triggers. |
-| `LUDDITE_TRIGGER_WORDS` | no | `ludita,luditas,luddite,luddites` | Comma-separated luddite-image triggers. |
-| `TRIGGER_WORDS` | no | — | Legacy alias for `TRACTOR_TRIGGER_WORDS`; ignored when `TRACTOR_TRIGGER_WORDS` is set. |
+| `TRACTOR_TRIGGER_WORDS` | no | `claude,claudio` | Comma-separated tractor-image triggers. Case-insensitive, whole-word. |
+| `LUDDITE_TRIGGER_WORDS` | no | `ludita,luditas,luddite,luddites` | Comma-separated luddite-image triggers. Case-insensitive, whole-word. |
 | `COOLDOWN_SECONDS` | no | `60` | Minimum seconds between successful generations. |
 | `GEMINI_MODEL` | no | `gemini-2.5-flash-image` | Override only if Google renames the model. |
 

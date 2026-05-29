@@ -74,6 +74,17 @@ describe("findTriggerMatch", () => {
       word: "ludita",
     });
   });
+
+  it("matches the longer trigger when the shorter would not fit (luditas, not ludita)", () => {
+    assert.deepEqual(findTriggerMatch("sois unos luditas hoy", TRIGGERS), {
+      theme: "luddite",
+      word: "luditas",
+    });
+    assert.deepEqual(findTriggerMatch("the luddites return", TRIGGERS), {
+      theme: "luddite",
+      word: "luddites",
+    });
+  });
 });
 
 describe("extractUserHint", () => {

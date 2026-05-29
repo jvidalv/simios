@@ -75,7 +75,7 @@ describe("prompt builder", () => {
     const tractor = buildPromptParts("tractor", seeded(1));
     const luddite = buildPromptParts("luddite", seeded(1));
     assert.match(renderCaption(tractor), /^🐒🚜 /u);
-    assert.match(renderCaption(luddite), /^Mono ludita - /u);
+    assert.match(renderCaption(luddite), /^Mono ludita — /u);
     assert.equal(imageFilenameForPrompt(tractor), "tractor.png");
     assert.equal(imageFilenameForPrompt(luddite), "ludita.png");
   });

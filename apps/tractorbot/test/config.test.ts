@@ -6,7 +6,6 @@ const ENV_KEYS = [
   "BOT_TOKEN",
   "GEMINI_API_KEY",
   "CHAT_ID",
-  "TRIGGER_WORDS",
   "TRACTOR_TRIGGER_WORDS",
   "LUDDITE_TRIGGER_WORDS",
   "COOLDOWN_SECONDS",
@@ -83,22 +82,6 @@ describe("loadConfig", () => {
     assert.deepEqual(config.triggerGroups[0], {
       theme: "tractor",
       words: ["foo", "bar", "baz"],
-    });
-  });
-
-  it("keeps TRIGGER_WORDS as a legacy alias for tractor triggers", () => {
-    const config = withEnv(
-      {
-        BOT_TOKEN: "abc",
-        GEMINI_API_KEY: "k",
-        CHAT_ID: "-1",
-        TRIGGER_WORDS: "old, alias",
-      },
-      () => loadConfig(),
-    );
-    assert.deepEqual(config.triggerGroups[0], {
-      theme: "tractor",
-      words: ["old", "alias"],
     });
   });
 

@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { type ImageTheme } from "./theme.js";
 
 const TRACTOR_STYLES = [
@@ -424,38 +423,32 @@ const LUDDITE_LIGHTING = [
   "lit only by emergency exit signs",
 ];
 
-const TractorPromptPartsSchema = z.object({
-  kind: z.literal("tractor"),
-  style: z.string(),
-  tractor: z.string(),
-  setting: z.string(),
-  quirk: z.string(),
-  mood: z.string(),
-  pose: z.string(),
-  cameraAngle: z.string(),
-  timeOfDay: z.string(),
-  lighting: z.string(),
-});
-type TractorPromptParts = z.infer<typeof TractorPromptPartsSchema>;
+interface TractorPromptParts {
+  readonly kind: "tractor";
+  readonly style: string;
+  readonly tractor: string;
+  readonly setting: string;
+  readonly quirk: string;
+  readonly mood: string;
+  readonly pose: string;
+  readonly cameraAngle: string;
+  readonly timeOfDay: string;
+  readonly lighting: string;
+}
 
-const LudditePromptPartsSchema = z.object({
-  kind: z.literal("luddite"),
-  style: z.string(),
-  modernThreat: z.string(),
-  action: z.string(),
-  setting: z.string(),
-  quirk: z.string(),
-  mood: z.string(),
-  cameraAngle: z.string(),
-  lighting: z.string(),
-});
-type LudditePromptParts = z.infer<typeof LudditePromptPartsSchema>;
+interface LudditePromptParts {
+  readonly kind: "luddite";
+  readonly style: string;
+  readonly modernThreat: string;
+  readonly action: string;
+  readonly setting: string;
+  readonly quirk: string;
+  readonly mood: string;
+  readonly cameraAngle: string;
+  readonly lighting: string;
+}
 
-export const PromptPartsSchema = z.discriminatedUnion("kind", [
-  TractorPromptPartsSchema,
-  LudditePromptPartsSchema,
-]);
-export type PromptParts = z.infer<typeof PromptPartsSchema>;
+export type PromptParts = TractorPromptParts | LudditePromptParts;
 
 function pickOne<T>(rng: () => number, arr: readonly T[]): T {
   const value = arr[Math.floor(rng() * arr.length)];
@@ -507,8 +500,8 @@ export function renderPrompt(parts: PromptParts, userHint?: string): string {
 export function renderCaption(parts: PromptParts, userHint?: string): string {
   if (parts.kind === "luddite") {
     return userHint === undefined
-      ? `Mono ludita - ${parts.style}`
-      : `Mono ludita - ${parts.style} - "${userHint}"`;
+      ? `Mono ludita — ${parts.style}`
+      : `Mono ludita — ${parts.style} — "${userHint}"`;
   }
   return userHint === undefined
     ? `🐒🚜 ${parts.style}`

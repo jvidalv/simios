@@ -1,22 +1,15 @@
-import { z } from "zod";
-import {
-  ImageThemeSchema,
-  type ImageTheme,
-  type TriggerGroup,
-} from "./theme.js";
+import { type ImageTheme, type TriggerGroup } from "./theme.js";
 
-const CompiledTriggerSchema = z.object({
-  theme: ImageThemeSchema,
-  word: z.string().min(1),
-  pattern: z.instanceof(RegExp),
-});
-type CompiledTrigger = z.infer<typeof CompiledTriggerSchema>;
+export interface CompiledTrigger {
+  readonly theme: ImageTheme;
+  readonly word: string;
+  readonly pattern: RegExp;
+}
 
-const TriggerMatchSchema = z.object({
-  theme: ImageThemeSchema,
-  word: z.string().min(1),
-});
-export type TriggerMatch = z.infer<typeof TriggerMatchSchema>;
+export interface TriggerMatch {
+  readonly theme: ImageTheme;
+  readonly word: string;
+}
 
 export function compileTriggers(
   groups: readonly TriggerGroup[],
@@ -24,16 +17,14 @@ export function compileTriggers(
   const compiled: CompiledTrigger[] = [];
   for (const group of groups) {
     for (const word of group.words) {
-      compiled.push(
-        CompiledTriggerSchema.parse({
-          theme: group.theme,
-          word,
-          pattern: new RegExp(
-            `(?<prefix>^|[^\\p{L}\\p{N}])${escapeRegex(word.toLowerCase())}(?=[^\\p{L}\\p{N}]|$)`,
-            "u",
-          ),
-        }),
-      );
+      compiled.push({
+        theme: group.theme,
+        word,
+        pattern: new RegExp(
+          `(?<prefix>^|[^\\p{L}\\p{N}])${escapeRegex(word.toLowerCase())}(?=[^\\p{L}\\p{N}]|$)`,
+          "u",
+        ),
+      });
     }
   }
   return compiled;
@@ -55,10 +46,7 @@ export function findTriggerMatch(
     const index = result.index + prefix.length;
     if (bestIndex === undefined || index < bestIndex) {
       bestIndex = index;
-      bestMatch = TriggerMatchSchema.parse({
-        theme: trigger.theme,
-        word: trigger.word,
-      });
+      bestMatch = { theme: trigger.theme, word: trigger.word };
     }
   }
   return bestMatch;
