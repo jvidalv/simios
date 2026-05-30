@@ -1,4 +1,5 @@
 import { parseTelegramUser } from "@simios/telegram-kit";
+import { withOptional } from "@simios/sheets-client";
 import type { BotContext } from "../context.js";
 import type { Services } from "../services.js";
 import { CmSchema } from "../domain/parse.js";
@@ -43,12 +44,14 @@ export function buildHeight(services: Services) {
       return;
     }
 
+    // Spread keeps joined_at, left_at, and the stored username; withOptional
+    // refreshes the username from Telegram only when present (and non-empty),
+    // matching how /join and /weight handle the optional field.
     const base: Participant = {
       ...participant,
       height_cm: validated.data,
     };
-    const updated: Participant =
-      user.username === undefined ? base : { ...base, username: user.username };
+    const updated: Participant = withOptional(base, "username", user.username);
 
     await services.participants.upsert(updated);
     await ctx.reply(`Updated height: ${String(validated.data)} cm.`);
