@@ -114,8 +114,8 @@ describe("card prompt builder", () => {
       surface: "shiny",
     });
     assert.match(caption, /^Name: \*Soulrender del Yermo\*$/mu);
-    assert.match(caption, /^Rarity: 🟪 \*unique\*$/mu); // purple square + bold
-    assert.match(caption, /^Texture: 🌈 \*shiny\*$/mu);
+    assert.match(caption, /^Rarity: 🟪 \*Unique\*$/mu); // purple square + bold, capitalised
+    assert.match(caption, /^Texture: 🌈 \*Shiny\*$/mu);
   });
 
   it("escapes MarkdownV2 metacharacters in the card name", () => {

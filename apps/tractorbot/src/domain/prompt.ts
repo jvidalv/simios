@@ -412,13 +412,24 @@ export interface CardCaption {
  * CARD_CAPTION_PARSE_MODE`; every interpolated value is MarkdownV2-escaped, so
  * a model-authored name full of metacharacters can't break the message.
  */
+/** Capitalise the first letter for display (the maps keep lowercase). */
+function capitalise(label: string): string {
+  return label.slice(0, 1).toUpperCase() + label.slice(1);
+}
+
 export function renderCaption(card: CardCaption): string {
   const borderEmoji = BORDER_EMOJI[card.border];
   const surfaceEmoji = SURFACE_EMOJI[card.surface];
   const name = bold(escapeMarkdownV2(card.name));
-  const rarity = `${borderEmoji} ${bold(escapeMarkdownV2(BORDER_LABEL[card.border]))}`;
-  const texture = `${surfaceEmoji} ${bold(escapeMarkdownV2(SURFACE_LABEL[card.surface]))}`;
-  return `Name: ${name}\nRarity: ${rarity}\nTexture: ${texture}`;
+  const rarityLabel = bold(escapeMarkdownV2(capitalise(BORDER_LABEL[card.border])));
+  const textureLabel = bold(
+    escapeMarkdownV2(capitalise(SURFACE_LABEL[card.surface])),
+  );
+  return (
+    `Name: ${name}\n` +
+    `Rarity: ${borderEmoji} ${rarityLabel}\n` +
+    `Texture: ${surfaceEmoji} ${textureLabel}`
+  );
 }
 
 export function imageFilenameForPrompt(parts: PromptParts): string {
