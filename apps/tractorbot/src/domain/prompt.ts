@@ -12,11 +12,8 @@ import {
   type Surface,
 } from "./rarity.js";
 import { fenceBody } from "./fence.js";
-import {
-  CARD_TYPE_EMOJI,
-  hasPowerToughness,
-  type CardType,
-} from "./card-type.js";
+import { bold, escapeMarkdownV2 } from "./markdown.js";
+import { hasPowerToughness, type CardType } from "./card-type.js";
 
 const TRACTORS = [
   "rusty red tractor",
@@ -406,19 +403,22 @@ export interface CardCaption {
 }
 
 /**
- * A flashy multi-line caption: the card type + name up top, then a rarity line
- * pairing each axis with its emoji. Plain text (no parse_mode) — the flair is
- * all emoji + spacing so it can't fail to render.
+ * A labelled caption with bold values, rendered with MarkdownV2:
+ *   Name: <name>
+ *   Rarity: <border emoji> <tier>
+ *   Texture: <surface emoji> <finish>
+ * The coloured square emoji carries the rarity "colour" (Telegram captions
+ * have no text-colour attribute). Send with `parse_mode:
+ * CARD_CAPTION_PARSE_MODE`; every interpolated value is MarkdownV2-escaped, so
+ * a model-authored name full of metacharacters can't break the message.
  */
 export function renderCaption(card: CardCaption): string {
-  const typeEmoji = CARD_TYPE_EMOJI[card.card_type];
   const borderEmoji = BORDER_EMOJI[card.border];
   const surfaceEmoji = SURFACE_EMOJI[card.surface];
-  const title = `${typeEmoji}✦ ${card.name} ✦${typeEmoji}`;
-  const rarity =
-    `${borderEmoji} ${BORDER_LABEL[card.border]}` +
-    `   ${surfaceEmoji} ${SURFACE_LABEL[card.surface]}`;
-  return `${title}\n${rarity}`;
+  const name = bold(escapeMarkdownV2(card.name));
+  const rarity = `${borderEmoji} ${bold(escapeMarkdownV2(BORDER_LABEL[card.border]))}`;
+  const texture = `${surfaceEmoji} ${bold(escapeMarkdownV2(SURFACE_LABEL[card.surface]))}`;
+  return `Name: ${name}\nRarity: ${rarity}\nTexture: ${texture}`;
 }
 
 export function imageFilenameForPrompt(parts: PromptParts): string {

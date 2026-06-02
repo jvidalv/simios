@@ -106,19 +106,28 @@ describe("card prompt builder", () => {
     assert.notEqual(a, b);
   });
 
-  it("renders a fancy caption with type/rarity/texture emojis and name", () => {
+  it("renders a labelled MarkdownV2 caption with emoji + bold values", () => {
     const caption = renderCaption({
       name: "Soulrender del Yermo",
       card_type: "weapon",
       border: "unique",
       surface: "shiny",
     });
-    assert.match(caption, /⚔️/u); // weapon emoji
-    assert.match(caption, /🟪/u); // unique border (purple square)
-    assert.match(caption, /🌈/u); // shiny surface
-    assert.match(caption, /Soulrender del Yermo/);
-    assert.match(caption, /unique/);
-    assert.match(caption, /shiny/);
+    assert.match(caption, /^Name: \*Soulrender del Yermo\*$/mu);
+    assert.match(caption, /^Rarity: 🟪 \*unique\*$/mu); // purple square + bold
+    assert.match(caption, /^Texture: 🌈 \*shiny\*$/mu);
+  });
+
+  it("escapes MarkdownV2 metacharacters in the card name", () => {
+    const caption = renderCaption({
+      name: "Mr. Banana-Tractor (v2)!",
+      card_type: "monkey",
+      border: "common",
+      surface: "normal",
+    });
+    // The dots, hyphen, parens, and bang must be backslash-escaped so the
+    // MarkdownV2 message can't 400.
+    assert.match(caption, /Mr\\\. Banana\\-Tractor \\\(v2\\\)\\!/u);
   });
 
   it("names the file by theme", () => {

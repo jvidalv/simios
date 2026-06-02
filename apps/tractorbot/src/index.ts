@@ -23,6 +23,7 @@ import {
 } from "./domain/trigger.js";
 import { rollBorder, rollSurface } from "./domain/rarity.js";
 import { rollCardType } from "./domain/card-type.js";
+import { CARD_CAPTION_PARSE_MODE } from "./domain/markdown.js";
 import { CardSchema, type Card } from "./domain/card.js";
 import { createServices, ensureSheetsReady } from "./services.js";
 import { buildCollection } from "./commands/collection.js";
@@ -128,6 +129,7 @@ async function main(): Promise<void> {
             border,
             surface,
           }),
+          parse_mode: CARD_CAPTION_PARSE_MODE,
           reply_parameters: { message_id: ctx.message.message_id },
         },
       );

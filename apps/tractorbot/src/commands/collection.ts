@@ -4,6 +4,7 @@ import type { Services } from "../services.js";
 import type { Card } from "../domain/card.js";
 import { BorderSchema } from "../domain/rarity.js";
 import { renderCaption } from "../domain/prompt.js";
+import { CARD_CAPTION_PARSE_MODE } from "../domain/markdown.js";
 import { parseCollectionArgs } from "../domain/collection-args.js";
 
 // Telegram caps a media group at 10 items.
@@ -89,6 +90,7 @@ export function buildCollection(services: Services) {
         type: "photo",
         media: card.file_id,
         caption: renderCaption(card),
+        parse_mode: CARD_CAPTION_PARSE_MODE,
       }));
       try {
         await ctx.replyWithMediaGroup(media);
