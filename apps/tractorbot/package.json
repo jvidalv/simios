@@ -10,10 +10,13 @@
     "lint": "eslint src --max-warnings=0",
     "test": "tsx --test test/*.test.ts",
     "dev": "tsx watch src/index.ts",
+    "qa:cards": "tsx src/dev/card-qa.ts",
+    "gen:samples": "tsx src/dev/card-samples.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {
     "@simios/env": "workspace:*",
+    "@simios/sheets-client": "workspace:*",
     "@simios/telegram-kit": "workspace:*",
     "grammy": "^1.32.0",
     "zod": "^3.23.8"

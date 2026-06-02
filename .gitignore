@@ -4,3 +4,9 @@ dist
 .env.*
 *.log
 .DS_Store
+
+# tractorbot dev-only sample/QA output (gen:samples)
+card-samples/
+
+# Claude Code harness scratch
+.claude/scheduled_tasks.lock

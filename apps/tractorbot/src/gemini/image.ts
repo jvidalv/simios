@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { postGenerateContent } from "./request.js";
 
 const InlineDataSchema = z.object({
   inlineData: z.object({
@@ -34,32 +35,23 @@ export interface GeminiImageClient {
   generate(prompt: string): Promise<GeminiImage>;
 }
 
+// Hard cap on a single image request. Without it, a hung upstream call holds
+// the bot's in-flight latch forever (every later trigger is silently dropped
+// until restart) and stalls the QA harness mid-batch.
+const REQUEST_TIMEOUT_MS = 90_000;
+
 export function createGeminiImageClient(params: {
   readonly apiKey: string;
   readonly model: string;
 }): GeminiImageClient {
-  const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/` +
-    `${encodeURIComponent(params.model)}:generateContent`;
   return {
     async generate(prompt: string): Promise<GeminiImage> {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": params.apiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-        }),
+      const raw = await postGenerateContent({
+        apiKey: params.apiKey,
+        model: params.model,
+        body: { contents: [{ parts: [{ text: prompt }] }] },
+        timeoutMs: REQUEST_TIMEOUT_MS,
       });
-      if (!response.ok) {
-        const body = await response.text();
-        throw new Error(
-          `Gemini ${String(response.status)} ${response.statusText}: ${body.slice(0, 500)}`,
-        );
-      }
-      const raw: unknown = await response.json();
       const parsed = ResponseSchema.safeParse(raw);
       if (!parsed.success) {
         throw new Error(
