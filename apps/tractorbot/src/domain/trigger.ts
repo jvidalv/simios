@@ -72,24 +72,13 @@ export function triggerWordsForTheme(
 const MAX_HINT_CHARS = 200;
 
 /**
- * Pull whatever the user typed alongside a trigger word, so the Gemini
- * prompt can incorporate their intent. Strips all trigger words for the
- * matched theme (case-insensitive, whole-word), collapses whitespace,
- * and trims. Returns undefined when the remainder is empty.
+ * The triggering message, kept INTACT as scene context for the card — the
+ * trigger word is deliberately NOT stripped, so "I love claudio and im
+ * working on a robot" reaches the namer whole. Only collapses whitespace,
+ * trims, and caps length. Returns undefined when the message is empty.
  */
-export function extractUserHint(
-  text: string,
-  triggerWords: readonly string[],
-): string | undefined {
-  let stripped = text;
-  for (const word of triggerWords) {
-    const pattern = new RegExp(
-      `(^|[^\\p{L}\\p{N}])${escapeRegex(word)}(?=[^\\p{L}\\p{N}]|$)`,
-      "giu",
-    );
-    stripped = stripped.replace(pattern, "$1");
-  }
-  const cleaned = stripped.replace(/\s+/gu, " ").trim();
+export function extractUserHint(text: string): string | undefined {
+  const cleaned = text.replace(/\s+/gu, " ").trim();
   if (cleaned.length === 0) return undefined;
   return cleaned.length > MAX_HINT_CHARS
     ? `${cleaned.slice(0, MAX_HINT_CHARS).trim()}…`

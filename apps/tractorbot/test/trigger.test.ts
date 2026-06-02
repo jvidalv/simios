@@ -14,8 +14,6 @@ const TRIGGER_GROUPS: readonly TriggerGroup[] = [
   { theme: "luddite", words: ["ludita", "luditas", "luddite", "luddites"] },
 ];
 const TRIGGERS = compileTriggers(TRIGGER_GROUPS);
-const TRACTOR_WORDS = triggerWordsForTheme(TRIGGER_GROUPS, "tractor");
-const LUDDITE_WORDS = triggerWordsForTheme(TRIGGER_GROUPS, "luddite");
 
 describe("matchesTrigger", () => {
   it("matches tractor words at the start or end of a message", () => {
@@ -87,77 +85,40 @@ describe("findTriggerMatch", () => {
   });
 });
 
+describe("triggerWordsForTheme", () => {
+  it("returns the configured words for a theme", () => {
+    assert.deepEqual(triggerWordsForTheme(TRIGGER_GROUPS, "tractor"), [
+      "claude",
+      "claudio",
+    ]);
+  });
+});
+
 describe("extractUserHint", () => {
-  it("strips tractor trigger words", () => {
+  it("keeps the whole message intact, trigger word included", () => {
     assert.equal(
-      extractUserHint("claude un buen john deere", TRACTOR_WORDS),
-      "un buen john deere",
+      extractUserHint("I love claudio and im working on a robot with it"),
+      "I love claudio and im working on a robot with it",
     );
     assert.equal(
-      extractUserHint("muddy field claudio", TRACTOR_WORDS),
-      "muddy field",
-    );
-  });
-
-  it("strips luddite trigger words", () => {
-    assert.equal(
-      extractUserHint("ludita contra los patinetes electricos", LUDDITE_WORDS),
-      "contra los patinetes electricos",
-    );
-    assert.equal(
-      extractUserHint("luddite against smart fridges", LUDDITE_WORDS),
-      "against smart fridges",
+      extractUserHint("ludita contra los patinetes electricos"),
+      "ludita contra los patinetes electricos",
     );
   });
 
-  it("strips a mid-sentence trigger word", () => {
+  it("collapses whitespace and trims", () => {
     assert.equal(
-      extractUserHint("hey claude what about a banana?", TRACTOR_WORDS),
-      "hey what about a banana?",
+      extractUserHint("  claude   un buen   john deere  "),
+      "claude un buen john deere",
     );
   });
 
-  it("strips all trigger words for the matched theme", () => {
-    assert.equal(
-      extractUserHint("claude claudio pirate ship", TRACTOR_WORDS),
-      "pirate ship",
-    );
-    assert.equal(
-      extractUserHint("ludita luddite smart toaster", LUDDITE_WORDS),
-      "smart toaster",
-    );
+  it("returns undefined for a whitespace-only message", () => {
+    assert.equal(extractUserHint("   \n\t  "), undefined);
   });
 
-  it("is case-insensitive", () => {
-    assert.equal(
-      extractUserHint("CLAUDE sunset over a vineyard", TRACTOR_WORDS),
-      "sunset over a vineyard",
-    );
-    assert.equal(
-      extractUserHint("LUDITA con un martillo", LUDDITE_WORDS),
-      "con un martillo",
-    );
-  });
-
-  it("returns undefined when only triggers + whitespace are present", () => {
-    assert.equal(extractUserHint("  claude  claudio  ", TRACTOR_WORDS), undefined);
-    assert.equal(extractUserHint("  ludita  luddites  ", LUDDITE_WORDS), undefined);
-  });
-
-  it("does not strip substrings inside other words", () => {
-    assert.equal(
-      extractUserHint("claudette is here, claude", TRACTOR_WORDS),
-      "claudette is here,",
-    );
-    assert.equal(
-      extractUserHint("antiludita pero ludita", LUDDITE_WORDS),
-      "antiludita pero",
-    );
-  });
-
-  it("truncates very long hints with an ellipsis", () => {
-    const long = "ludita " + "a".repeat(500);
-    const result = extractUserHint(long, LUDDITE_WORDS);
+  it("truncates very long messages with an ellipsis", () => {
+    const result = extractUserHint("ludita " + "a".repeat(500));
     assert.ok(result !== undefined);
     assert.ok(result.length <= 201);
     assert.ok(result.endsWith("…"));

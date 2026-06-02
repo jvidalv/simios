@@ -19,7 +19,6 @@ import {
   compileTriggers,
   findTriggerMatch,
   extractUserHint,
-  triggerWordsForTheme,
 } from "./domain/trigger.js";
 import { rollBorder, rollSurface } from "./domain/rarity.js";
 import { rollCardType } from "./domain/card-type.js";
@@ -94,10 +93,7 @@ async function main(): Promise<void> {
       const surface = config.forceSurface ?? rollSurface();
       const cardType = rollCardType();
       const parts = buildPromptParts(match.theme);
-      const userHint = extractUserHint(
-        messageText,
-        triggerWordsForTheme(config.triggerGroups, match.theme),
-      );
+      const userHint = extractUserHint(messageText);
 
       // Full card data before the image, deduped against this user's cards.
       const existingNames = (await services.cards.listAll())
