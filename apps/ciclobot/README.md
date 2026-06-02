@@ -2,15 +2,15 @@
 
 ![ciclobot](./docs/banner.png)
 
-Telegram bot that tracks a small group's weekly 5×5 weightlifting numbers and triathlon training in a Google Sheet, and nudges anyone who hasn't logged by Sunday evening.
+Telegram bot that tracks a small group's weekly 5×5 weightlifting numbers and triathlon training in a Google Sheet.
 
 ## What it does
 
-- **Lifts tracked.** `bench`, `squat`, `deadlift` are *required* (you'll be reminded). `clean_and_jerk`, `snatch` are *optional* (logged opportunistically, never reminded).
+- **Lifts tracked.** `bench`, `squat`, `deadlift` are *required*. `clean_and_jerk`, `snatch` are *optional* (logged opportunistically).
 - **Each lift entry** = working weight in kg + whether you completed all 5 sets.
 - **Triathlon sessions.** `bike`, `swim`, `run` — each logged as distance (km) + elapsed time, with average velocity (km/h) computed. Unlike lifts, sessions are **append-only**: log as many per week as you train.
 - **Body weight** logged once per week (kg).
-- **Reminder** posted Sunday at 19:00 Europe/Madrid, tagging only people missing required entries.
+- **History.** `/history` replays your last 8 weeks across lifts, bodyweight, and bike/swim/run sessions; pass a lift, discipline, or `bodyweight` to filter.
 - **Storage** is a single Google Sheet with four tabs (`participants`, `log`, `bodyweight`, `triathlon`). Everyone in the group can view the sheet directly.
 
 Commands: `/help` shows the full list inside the bot.
@@ -118,4 +118,4 @@ pnpm -F ciclobot lint
 - *"Invalid environment configuration"* on startup → one of the env vars is missing/malformed. The error names which one.
 - *Bot doesn't respond in the group* → check `CHAT_ID` matches the actual group. The middleware silently drops other chats. Also confirm BotFather privacy mode is **Enable** (default) — commands still reach the bot.
 - *"Tab not found" or sheet errors* → the service account email is missing Editor access on the sheet. Re-share with the right email.
-- *Reminder fires at the wrong time* → check `TZ` env var. The cron uses that timezone.
+- *Week boundaries land on the wrong day* → check `TZ` env var. ISO-week and week-start calculations use that timezone.

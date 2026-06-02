@@ -8,7 +8,6 @@ import {
   startHealthServer,
 } from "@simios/telegram-kit";
 import { Bot } from "grammy";
-import cron from "node-cron";
 import { loadConfig } from "./config.js";
 import { createServices, ensureSheetsReady } from "./services.js";
 import type { BotContext } from "./context.js";
@@ -26,7 +25,6 @@ import { buildHeight } from "./commands/height.js";
 import { buildWeek } from "./commands/week.js";
 import { buildHistory } from "./commands/history.js";
 import { buildUndo } from "./commands/undo.js";
-import { runReminder } from "./reminder.js";
 
 async function main(): Promise<void> {
   console.log("ciclobot: validating environment…");
@@ -52,7 +50,7 @@ async function main(): Promise<void> {
     { command: "weight", description: "Log body weight: /weight <kg>" },
     { command: "height", description: "Update height: /height <cm>" },
     { command: "week", description: "Show this week's table" },
-    { command: "history", description: "Show your last 8 weeks" },
+    { command: "history", description: "Show your last 8 weeks (lifts, bodyweight, bike/swim/run)" },
     { command: "undo", description: "Undo this week's entry: /undo <lift|bodyweight|bike|swim|run>" },
     { command: "participants", description: "List active participants" },
     { command: "cancel", description: "Cancel an in-progress flow" },
@@ -73,16 +71,6 @@ async function main(): Promise<void> {
   bot.catch((err) => {
     console.error("Bot error:", err);
   });
-
-  cron.schedule(
-    "0 19 * * 0",
-    () => {
-      runReminder(bot, services).catch((err: unknown) => {
-        console.error("Reminder failed:", err);
-      });
-    },
-    { timezone: config.timeZone },
-  );
 
   // Flip to true after the bot's long poll is actually running.
   let healthy = false;

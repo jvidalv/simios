@@ -10,7 +10,7 @@ const HELP_TEXT = `🏋️ ciclobot — weekly 5×5 tracker
 4. /height 178 — update your height
 5. /week — see the group's table
 
-That's it. Re-log to overwrite. Sunday 19:00 the bot pings whoever's missing required entries.
+That's it. Re-log to overwrite.
 
 📋 ALL COMMANDS
 
@@ -29,7 +29,7 @@ Triathlon sessions are append-only: log as many bike/swim/run sessions per week 
 
 Viewing
 /week — this week, everyone
-/history — your last 8 weeks
+/history — your last 8 weeks (lifts, bodyweight, and bike/swim/run sessions)
 /history <lift> — filtered to one lift
 /history <bike|swim|run> — your recent sessions for that discipline
 /history bodyweight — your weekly bodyweight history
@@ -42,8 +42,8 @@ Membership
 
 ℹ️ THE LIFTS
 
-Required (reminded): bench, squat, deadlift
-Optional (never reminded): clean_and_jerk, snatch
+Required: bench, squat, deadlift
+Optional: clean_and_jerk, snatch
 
 Type lift names exactly — no aliases. Weights are always kg.`;
 

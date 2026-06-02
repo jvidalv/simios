@@ -47,16 +47,10 @@ importers:
       grammy:
         specifier: ^1.32.0
         version: 1.42.0
-      node-cron:
-        specifier: ^3.0.3
-        version: 3.0.3
       zod:
         specifier: ^3.23.8
         version: 3.25.76
     devDependencies:
-      '@types/node-cron':
-        specifier: ^3.0.11
-        version: 3.0.11
       tsx:
         specifier: ^4.19.2
         version: 4.21.0

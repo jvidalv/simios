@@ -28,6 +28,14 @@ export function velocityKmh(entry: TriathlonEntry): number {
   return entry.distance_km / (entry.duration_seconds / 3600);
 }
 
+/** The `<distance>km in <duration> (<velocity> km/h)` core of a session line. */
+export function formatSessionBody(entry: TriathlonEntry): string {
+  return (
+    `${String(entry.distance_km)}km in ` +
+    `${formatDuration(entry.duration_seconds)} (${velocityKmh(entry).toFixed(1)} km/h)`
+  );
+}
+
 /** Descending sort by logged_at (newest first). Safe lexically — ISO timestamps. */
 export function descLoggedAt(a: TriathlonEntry, b: TriathlonEntry): number {
   return b.logged_at.localeCompare(a.logged_at);

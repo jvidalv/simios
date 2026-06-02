@@ -7,8 +7,7 @@ import type { LogEntry } from "../domain/log-entry.js";
 import type { BodyweightEntry } from "../domain/bodyweight.js";
 import {
   descLoggedAt,
-  formatDuration,
-  velocityKmh,
+  formatSessionBody,
   type TriathlonEntry,
 } from "../domain/triathlon.js";
 import { descIsoWeek, parseTarget } from "../domain/target.js";
@@ -64,19 +63,24 @@ export function buildHistory(services: Services) {
       return;
     }
 
-    const [logsAll, bwsAll] = await Promise.all([
+    const [logsAll, bwsAll, triAll] = await Promise.all([
       services.log.listAll(),
       services.bodyweight.listAll(),
+      services.triathlon.listAll(),
     ]);
     const mineLogs = logsAll.filter((l) => l.user_id === user.user_id);
     const mineBws = bwsAll.filter((b) => b.user_id === user.user_id);
-    const recentLifts = takeRecent(mineLogs);
-    const recentBws = takeRecent(mineBws);
-    const weeks = new Set<string>([
-      ...recentLifts.map((l) => l.iso_week),
-      ...recentBws.map((b) => b.iso_week),
+    const mineTri = triAll.filter((s) => s.user_id === user.user_id);
+    // Pick the weeks to show first, then keep every entry in those weeks.
+    // Triathlon is append-only (many sessions per week), so we must truncate by
+    // week, not by row — slicing rows would silently drop sessions from a shown
+    // week.
+    const allWeeks = new Set<string>([
+      ...mineLogs.map((l) => l.iso_week),
+      ...mineBws.map((b) => b.iso_week),
+      ...mineTri.map((s) => s.iso_week),
     ]);
-    const orderedWeeks = [...weeks]
+    const orderedWeeks = [...allWeeks]
       .sort((a, b) => b.localeCompare(a))
       .slice(0, WEEKS_TO_SHOW);
     if (orderedWeeks.length === 0) {
@@ -86,14 +90,19 @@ export function buildHistory(services: Services) {
     const lines: string[] = [];
     for (const w of orderedWeeks) {
       lines.push(`\n${w}`);
-      for (const l of recentLifts.filter((entry) => entry.iso_week === w)) {
+      for (const l of mineLogs.filter((entry) => entry.iso_week === w)) {
         lines.push(
           `  ${l.lift}: ${String(l.weight_kg)}kg ${l.made ? "✅" : "❌"}`,
         );
       }
-      const bw = recentBws.find((b) => b.iso_week === w);
+      const bw = mineBws.find((b) => b.iso_week === w);
       if (bw !== undefined) {
         lines.push(`  bodyweight: ${String(bw.weight_kg)}kg`);
+      }
+      for (const s of mineTri
+        .filter((entry) => entry.iso_week === w)
+        .sort(descLoggedAt)) {
+        lines.push(`  ${s.discipline}: ${formatSessionBody(s)}`);
       }
     }
     await ctx.reply(`Your last ${String(WEEKS_TO_SHOW)} weeks:${lines.join("\n")}`);
@@ -120,9 +129,7 @@ function formatTriathlon(
 ): string {
   if (rows.length === 0) return `No ${discipline} sessions yet.`;
   const lines = rows.map(
-    (r) =>
-      `${r.iso_week}: ${String(r.distance_km)}km in ` +
-      `${formatDuration(r.duration_seconds)} (${velocityKmh(r).toFixed(1)} km/h)`,
+    (r) => `${r.iso_week}: ${formatSessionBody(r)}`,
   );
   return `Your last ${String(rows.length)} ${discipline} sessions:\n${lines.join("\n")}`;
 }
