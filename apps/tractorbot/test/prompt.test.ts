@@ -42,6 +42,12 @@ describe("card prompt builder", () => {
     assert.match(text, /no card-within-a-card/);
   });
 
+  it("pins a plain white background behind the card", () => {
+    const text = renderPrompt(render());
+    assert.match(text, /pure-white background/);
+    assert.match(text, /never black/);
+  });
+
   it("places every model-authored text field verbatim", () => {
     const text = renderPrompt(render());
     assert.match(text, /Soulrender del Yermo/);

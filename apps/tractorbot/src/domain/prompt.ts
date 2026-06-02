@@ -368,7 +368,7 @@ function cardStructure(render: CardRender, artPanel: string): string {
     ? `(5) a small power/toughness box in the bottom-right corner reading exactly «${render.power}/${render.toughness}». `
     : `(5) NO power/toughness box — this is not a creature. `;
   return (
-    `Render a single Magic-the-Gathering-style collectible card, portrait orientation, centered and filling the entire frame — the whole image IS the card, nothing outside it. ` +
+    `Render a single Magic-the-Gathering-style collectible card, portrait orientation, centered on a plain solid pure-white background (#FFFFFF) with an even white margin around all four sides — the area behind and around the card is ALWAYS plain white, never black or coloured. ` +
     `Use this EXACT fixed layout, top to bottom: ` +
     `(1) a title bar across the very top: the card name on the left reading exactly «${name}», and the mana cost on the right reading exactly «${cost}» (omit the cost area if "${NONE}"); ` +
     `(2) a large rectangular art panel filling the upper-middle; ` +
@@ -379,7 +379,7 @@ function cardStructure(render: CardRender, artPanel: string): string {
     `The ENTIRE card has ${finish}, obvious across the whole card. ` +
     `Only the text strings quoted above may appear — render them legibly and place them in their boxes; invent no other words, numbers, or symbols. ` +
     `Art panel (${HOUSE_STYLE}): ${artPanel} ` +
-    `Reiterate: ONE ${color}-bordered Magic-style card with title+cost bar, art panel, type line, and text box; ${finish} across the whole card; no card-within-a-card, no extra UI, no real-world background beyond the ${color} frame.`
+    `Reiterate: ONE ${color}-bordered Magic-style card centered on a plain pure-white background with a white margin on all sides; title+cost bar, art panel, type line, and text box; ${finish} across the whole card; no card-within-a-card, no extra UI, the background behind the card is always white (never black).`
   );
 }
 
